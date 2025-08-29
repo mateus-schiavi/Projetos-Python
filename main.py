@@ -1,40 +1,81 @@
-def calcular_media(notas):
-    soma = 0
-    for i in range(len(notas)):
-        soma += notas[i]
-    media = soma / len(notas)
-    return media
+# ANÁLISE DE DADOS - CÓDIGO COM ERROS PARA CORREÇÃO
 
-def verificar_aprovacao(media):
-    if media >= 7:
-        return "Aprovado"
-    elif media >= 5:
-        return "Recuperação"
-    else:
-        return "Reprovado"
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
-def main():
-    alunos = {
-        "João": [8.5, 7.0, 6.5],
-        "Maria": [9.0, 8.5, 9.5],
-        "Pedro": [4.0, 5.5, 6.0],
-        "Ana": [7.5, 8.0, 7.0]
+# ========== SEÇÃO 1: DATASET COM ERROS ==========
+def criar_dataset():
+    dados = {
+        'id': range(1, 11),
+        'nome': ['Ana Silva', 'Carlos Oliveira', 'Maria Santos', 'João Pereira', 'Pedro Costa'],
+        'departamento': np.random.choice(['Vendas', 'TI', 'RH'], 10),
+        'salario': np.random.randint(3000, 8000, 10),
+        'idade': np.random.randint(25, 50, 10)
     }
     
-    resultados = []
-    
-    for nome, notas in alunos.items():
-        try:
-            media = calcular_media(notas)
-            situacao = verificar_aprovacao(media)
-            resultados.append({"nome": nome, "media": media, "situacao": situacao})
-        except Exception as e:
-            print(f"Erro ao processar {nome}: {str(e)}")
-    
-    print("Resultados finais:")
-    for resultado in resultados:
-        print(f"{resultado['nome']}: Média {resultado['media']:.2f} - {resultado['situacao']}")
+    df = pd.DataFrame(dados)
+    return df
 
-if __name__ == "__main__":
-    main()
+df = criar_dataset()
+print("Primeiras linhas:")
+print(df.head()
 
+# ========== SEÇÃO 2: ANÁLISE COM ERROS ==========
+def analisar_dados(df):
+    print("\n=== ANÁLISE ===")
+    print(f"Total de funcionários: {len(df)}")
+    print(f"Média salarial: R$ {df['salario'].mean()}")
+    print(f"Maior salário: R$ {df['salario'].max()}")
+    
+    # Contagem por departamento (ERRO)
+    contagem = df.groupby('departamento').count()
+    print("\nFuncionários por departamento:")
+    print(contagem['nome'])
+
+analisar_dados(df)
+
+# ========== SEÇÃO 3: VISUALIZAÇÃO COM ERROS ==========
+def criar_graficos(df):
+    plt.figure(figsize=(12, 4))
+    
+    # Gráfico de barras (ERRO)
+    plt.subplot(1, 2, 1)
+    df['departamento'].value_counts().plot.bar()
+    plt.title('Funcionários por Departamento')
+    
+    # Gráfico de dispersão (ERRO)
+    plt.subplot(1, 2, 2)
+    plt.scatter(df['idade'], df['salario'])
+    plt.xlabel('Idade')
+    plt.ylabel('Salário')
+    plt.title('Idade vs Salário')
+    
+    plt.tight_layout()
+    plt.show()
+
+criar_graficos(df)
+
+# ========== SEÇÃO 4: SISTEMA COM ERROS ==========
+class SistemaFuncionarios:
+    def __init__(self, dados):
+        self.df = pd.DataFrame(dados)
+    
+    def aumentar_salarios(self, departamento, percentual):
+        # ERRO: Filtro incorreto
+        mask = self.df['departamento'] = departamento
+        self.df.loc[mask, 'salario'] *= (1 + percentual / 100)
+        print(f"Salários de {departamento} aumentados em {percentual}%")
+    
+    def buscar_por_idade(self, idade_min, idade_max):
+        # ERRO: Condição lógica incorreta
+        resultado = self.df[(self.df['idade'] > idade_min) and (self.df['idade'] < idade_max)]
+        return resultado
+
+# Testando o sistema (ERROS)
+sistema = SistemaFuncionarios(df)
+sistema.aumentar_salarios('TI', 10)
+
+funcionarios_jovens = sistema.buscar_por_idade(25, 35)
+print("\nFuncionários entre 25-35 anos:")
+print(funcionarios_jovens[['nome', 'idade']])
