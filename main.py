@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 def criar_dataset():
     dados = {
         'id': range(1, 11),
-        'nome': ['Ana Silva', 'Carlos Oliveira', 'Maria Santos', 'João Pereira', 'Pedro Costa'],
+        'nome': ['Ana Silva', 'Carlos Oliveira', 'Maria Santos', 'João Pereira', 'Pedro Costa',
+                 'Laura Mendes', 'Paulo Rodrigues', 'Juliana Almeida', 'Fernando Lima', 'Camila Souza'],
         'departamento': np.random.choice(['Vendas', 'TI', 'RH'], 10),
         'salario': np.random.randint(3000, 8000, 10),
         'idade': np.random.randint(25, 50, 10)
@@ -19,19 +20,20 @@ def criar_dataset():
 
 df = criar_dataset()
 print("Primeiras linhas:")
-print(df.head()
+print(df.head())
 
 # ========== SEÇÃO 2: ANÁLISE COM ERROS ==========
 def analisar_dados(df):
     print("\n=== ANÁLISE ===")
     print(f"Total de funcionários: {len(df)}")
-    print(f"Média salarial: R$ {df['salario'].mean()}")
+    print(f"Média salarial: R$ {df['salario'].mean():.2f}")
+    print(f"Menor salário: R$ {df['salario'].min()}")
     print(f"Maior salário: R$ {df['salario'].max()}")
     
     # Contagem por departamento (ERRO)
-    contagem = df.groupby('departamento').count()
+    contagem = df.groupby('departamento')['nome'].count()
     print("\nFuncionários por departamento:")
-    print(contagem['nome'])
+    print(contagem)
 
 analisar_dados(df)
 
@@ -43,7 +45,7 @@ def criar_graficos(df):
     plt.subplot(1, 2, 1)
     df['departamento'].value_counts().plot.bar()
     plt.title('Funcionários por Departamento')
-    
+    plt.ylabel('Quantidade')
     # Gráfico de dispersão (ERRO)
     plt.subplot(1, 2, 2)
     plt.scatter(df['idade'], df['salario'])
@@ -63,19 +65,33 @@ class SistemaFuncionarios:
     
     def aumentar_salarios(self, departamento, percentual):
         # ERRO: Filtro incorreto
-        mask = self.df['departamento'] = departamento
+        mask = self.df['departamento'] == departamento
         self.df.loc[mask, 'salario'] *= (1 + percentual / 100)
         print(f"Salários de {departamento} aumentados em {percentual}%")
-    
+        print(f"Novos salários:\n{self.df[mask][['nome', 'salario']].to_string(index=False)}");
     def buscar_por_idade(self, idade_min, idade_max):
         # ERRO: Condição lógica incorreta
-        resultado = self.df[(self.df['idade'] > idade_min) and (self.df['idade'] < idade_max)]
+        resultado = self.df[(self.df['idade'] >= idade_min) & (self.df['idade'] <= idade_max)]
         return resultado
 
 # Testando o sistema (ERROS)
+print("\n" + "="*50)
 sistema = SistemaFuncionarios(df)
 sistema.aumentar_salarios('TI', 10)
-
+print("\n" + "="*50)
 funcionarios_jovens = sistema.buscar_por_idade(25, 35)
 print("\nFuncionários entre 25-35 anos:")
-print(funcionarios_jovens[['nome', 'idade']])
+if not funcionarios_jovens.empty:
+    print(funcionarios_jovens[['nome', 'idade', 'departamento']].to_string(index=False))
+else:
+    print("Nenhum funcionário encontrado na faixa etária especificada.")
+
+print("\n" + "="*50)
+print("ANÁLISE COMPLETA:")
+print(f"Média de idade por departamento:")
+idade_por_depto = df.groupby('departamento')['idade'].mean()
+print(idade_por_depto.round(1))
+
+print(f"\nMédia salarial por departamento:")
+salario_por_depto = df.groupby('departamento')['salario'].mean()
+print(salario_por_depto.round(2))
