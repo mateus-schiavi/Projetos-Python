@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+import seaborn as sns
 # ========== SEÇÃO 1: DATASET COM ERROS ==========
 def criar_dataset():
     dados = {
@@ -39,20 +39,32 @@ analisar_dados(df)
 
 # ========== SEÇÃO 3: VISUALIZAÇÃO COM ERROS ==========
 def criar_graficos(df):
-    plt.figure(figsize=(12, 4))
+    plt.figure(figsize=(12, 10))
     
     # Gráfico de barras (ERRO)
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
     df['departamento'].value_counts().plot.bar()
     plt.title('Funcionários por Departamento')
     plt.ylabel('Quantidade')
     # Gráfico de dispersão (ERRO)
-    plt.subplot(1, 2, 2)
+    plt.subplot(2, 2, 2)
     plt.scatter(df['idade'], df['salario'])
     plt.xlabel('Idade')
     plt.ylabel('Salário')
     plt.title('Idade vs Salário')
-    
+
+    # Gráfico de pizza (departamentos)
+    plt.subplot(2,2,3)
+    df['departamento'].value_counts().plot.pie(autopct='%1.1f%%')
+    plt.title('Proporção por Departamento')
+    plt.ylabel('')
+
+    # Outro gráfico de pizza (exemplo: gênero, se existir na base)
+    if 'idade' in df.columns:
+        plt.subplot(2,2,4)
+        df['idade'].value_counts().plot.pie(autopct='%1.1f%%')
+        plt.title('Distribuição por Idade')
+        plt.ylabel('')
     plt.tight_layout()
     plt.show()
 
